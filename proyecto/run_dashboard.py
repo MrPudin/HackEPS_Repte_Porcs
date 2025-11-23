@@ -88,7 +88,7 @@ def main():
 
     print(
         f"[run_dashboard] Granjas: {len(farms)}, "
-        f"escorxadors: {len(slaughterhouses)}, camiones: {len(transports)}"
+        f"Mataderos: {len(slaughterhouses)}, camiones: {len(transports)}"
     )
 
     print("[run_dashboard] Creando simulador...")

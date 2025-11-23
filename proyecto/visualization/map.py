@@ -2,7 +2,7 @@
 map.py
 ======
 
-Mapa sencillo de granjas y escorxadors usando Plotly.
+Mapa sencillo de granjas y mataderos usando Plotly.
 
 - plot_infrastructure_map: solo puntos.
 - plot_routes_for_day: puntos + líneas de rutas para un día concreto.
@@ -22,12 +22,12 @@ from src.models.Slaughterhouse import Slaughterhouse
 
 def plot_infrastructure_map(farms: List[Farm], slaughterhouses: List[Slaughterhouse]):
     """
-    Dibuja la localización de granjas y escorxadors en un mapa.
+    Dibuja la localización de granjas y mataderos en un mapa.
 
     En el contexto de los datos del reto, debería dibujar Cataluña.
     """
     if not farms and not slaughterhouses:
-        print("No hay granjas ni escorxadors para mostrar.")
+        print("No hay granjas ni mataderos para mostrar.")
         return
 
     rows = []
@@ -48,7 +48,7 @@ def plot_infrastructure_map(farms: List[Farm], slaughterhouses: List[Slaughterho
                 "name": s.name,
                 "lat": s.lat,
                 "lon": s.lon,
-                "type": "Escorxador",
+                "type": "Mataderos",
             }
         )
 
@@ -60,7 +60,7 @@ def plot_infrastructure_map(farms: List[Farm], slaughterhouses: List[Slaughterho
         lon="lon",
         color="type",
         hover_name="name",
-        title="Mapa de granjas y escorxadors",
+        title="Mapa de granjas y mataderos",
     )
     fig.update_layout(legend_title_text="Tipo")
     fig.show()
@@ -94,7 +94,7 @@ def plot_routes_for_day(
     Dibuja las rutas ejecutadas en un día concreto.
 
     - Cada ruta se dibuja como una polilínea:
-      escorxador -> granja1 -> granja2 -> ... -> escorxador
+      mataderos -> granja1 -> granja2 -> ... -> mataderos
     - Colorea por route_id.
     """
     if events is None or events.empty:
@@ -120,14 +120,14 @@ def plot_routes_for_day(
 
         farms_visited = _parse_farms_visited(row.get("farms_visited"))
 
-        points = [("Escorxador", sh.lat, sh.lon, sh.name)]
+        points = [("matadeors", sh.lat, sh.lon, sh.name)]
 
         for farm_id in farms_visited:
             farm = farm_dict.get(farm_id)
             if farm is not None:
                 points.append(("Granja", farm.lat, farm.lon, farm.name))
 
-        points.append(("Escorxador", sh.lat, sh.lon, sh.name))
+        points.append(("Mataderos", sh.lat, sh.lon, sh.name))
 
         for idx, (ptype, lat, lon, name) in enumerate(points):
             rows.append(

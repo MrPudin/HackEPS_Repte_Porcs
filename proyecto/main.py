@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Punto de entrada principal para la simulación de logística de porcos.
+Punto de entrada principal para la simulación de logística de cerdos.
 """
 
 from src.utils.data_loader import DataLoader
@@ -124,9 +124,9 @@ def main():
     
     print("\nRESUMEN DE DATOS:")
     print(f"  Granjas: {len(farms)}")
-    print(f"  Escorxadores: {len(slaughterhouses)}")
+    print(f"  Mataderos: {len(slaughterhouses)}")
     print(f"  Transportes: {len(transports)}")
-    print(f"  Total de porcos en sistema: {sum(f.inventory_pigs for f in farms)}")
+    print(f"  Total de cerdos en sistema: {sum(f.inventory_pigs for f in farms)}")
     print()
     
     print("=" * 60)

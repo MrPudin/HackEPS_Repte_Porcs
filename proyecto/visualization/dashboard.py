@@ -5,10 +5,10 @@ dashboard.py
 Funciones de visualización rápida usando Plotly.
 
 Incluye:
-- Porcos entregados por día
+- Cerdos entregados por día
 - Beneficio por día
 - Coste medio por ruta
-- Porcos medios por ruta
+- Cerdos medios por ruta
 """
 
 from __future__ import annotations
@@ -20,7 +20,7 @@ import plotly.express as px
 
 
 def plot_daily_pigs(events: pd.DataFrame):
-    """Bar chart de porcos entregados por día."""
+    """Bar chart de Cerdos entregados por día."""
     if events is None or events.empty:
         print("No hay eventos para mostrar.")
         return
@@ -36,8 +36,8 @@ def plot_daily_pigs(events: pd.DataFrame):
         daily,
         x="day",
         y="pigs",
-        title="Porcos entregados por día",
-        labels={"day": "Día", "pigs": "Porcos entregados"},
+        title="Cerdos entregados por día",
+        labels={"day": "Día", "pigs": "Cerdos entregados"},
     )
     fig.show()
 
@@ -73,7 +73,7 @@ def plot_daily_profit(events: pd.DataFrame):
 
 
 def plot_avg_pigs_per_route(events: pd.DataFrame):
-    """Porcos medios por ruta y día."""
+    """Cerdos medios por ruta y día."""
     if events is None or events.empty:
         print("No hay eventos para mostrar.")
         return
@@ -93,8 +93,8 @@ def plot_avg_pigs_per_route(events: pd.DataFrame):
         x="day",
         y="avg_pigs_per_route",
         markers=True,
-        title="Porcos medios por ruta y día",
-        labels={"day": "Día", "avg_pigs_per_route": "Porcos / ruta"},
+        title="Cerdos medios por ruta y día",
+        labels={"day": "Día", "avg_pigs_per_route": "Cerdos / ruta"},
     )
     fig.show()
 
