@@ -1,0 +1,5 @@
+slaughterhouse_id,name,lat,lon,capacity_per_day,price_per_kg,penalty_15_min,penalty_15_max,penalty_20_min,penalty_20_max
+S1,Escorxador Lleida,41.620,0.630,2000,1.56,0.15,0.15,0.20,0.20
+S2,Escorxador Girona,41.980,2.830,1800,1.56,0.15,0.15,0.20,0.20
+S3,Escorxador Tarragona,41.120,1.250,1700,1.56,0.15,0.15,0.20,0.20
+S4,Escorxador Barcelona,41.390,2.170,2200,1.56,0.15,0.15,0.20,0.20

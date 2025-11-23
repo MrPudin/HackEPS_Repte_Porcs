@@ -1,0 +1,4 @@
+transport_id,type,capacity_tons,cost_per_km,max_hours_per_week,fixed_weekly_cost
+T1,Trailer gran,20,1.15,80,2000
+T2,Camión medio,12,1.25,80,1800
+T3,Mega trailer,25,1.10,80,2300

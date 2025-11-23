@@ -1,0 +1,9 @@
+farm_id,name,lat,lon,inventory_pigs,avg_weight_kg,growth_rate_kg_per_week,age_weeks,price_per_kg,consumption_pigs,capacity
+F1,Granja Segrià,41.620,0.620,1200,108,7.0,17,1.56,2.8,1600
+F2,Granja Pla d'Urgell,41.650,0.900,900,103,7.5,16,1.56,2.7,1300
+F3,Granja Osona,41.930,2.250,800,110,7.2,18,1.56,2.9,1200
+F4,Granja Gironès,41.980,2.820,700,101,6.8,16,1.56,2.6,1000
+F5,Granja Tarragonès,41.120,1.240,950,99,7.8,15,1.56,2.7,1400
+F6,Granja Bages,41.730,1.820,600,115,7.0,19,1.56,3.0,900
+F7,Granja Alt Empordà,42.270,2.960,750,107,6.9,17,1.56,2.8,1100
+F8,Granja Baix Ebre,40.810,0.520,650,104,7.3,16,1.56,2.7,1000
