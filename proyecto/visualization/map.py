@@ -2,7 +2,7 @@
 map.py
 ======
 
-Mapa sencillo de granjas y escorxadores usando Plotly.
+Mapa sencillo de granjas y escorxadors usando Plotly.
 
 - plot_infrastructure_map: solo puntos.
 - plot_routes_for_day: puntos + líneas de rutas para un día concreto.
@@ -22,12 +22,12 @@ from src.models.Slaughterhouse import Slaughterhouse
 
 def plot_infrastructure_map(farms: List[Farm], slaughterhouses: List[Slaughterhouse]):
     """
-    Dibuja la localización de granjas y escorxadores en un mapa.
+    Dibuja la localización de granjas y escorxadors en un mapa.
 
     En el contexto de los datos del reto, debería dibujar Cataluña.
     """
     if not farms and not slaughterhouses:
-        print("No hay granjas ni escorxadores para mostrar.")
+        print("No hay granjas ni escorxadors para mostrar.")
         return
 
     rows = []
@@ -60,7 +60,7 @@ def plot_infrastructure_map(farms: List[Farm], slaughterhouses: List[Slaughterho
         lon="lon",
         color="type",
         hover_name="name",
-        title="Mapa de granjas y escorxadores",
+        title="Mapa de granjas y escorxadors",
     )
     fig.update_layout(legend_title_text="Tipo")
     fig.show()
@@ -120,7 +120,6 @@ def plot_routes_for_day(
 
         farms_visited = _parse_farms_visited(row.get("farms_visited"))
 
-        # empezamos en el escorxador
         points = [("Escorxador", sh.lat, sh.lon, sh.name)]
 
         for farm_id in farms_visited:
@@ -128,7 +127,6 @@ def plot_routes_for_day(
             if farm is not None:
                 points.append(("Granja", farm.lat, farm.lon, farm.name))
 
-        # volvemos al escorxador
         points.append(("Escorxador", sh.lat, sh.lon, sh.name))
 
         for idx, (ptype, lat, lon, name) in enumerate(points):

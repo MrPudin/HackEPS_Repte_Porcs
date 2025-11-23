@@ -68,7 +68,6 @@ class Router:
         self.max_stops_per_route = max_stops_per_route
         self.max_hours_per_day = max_hours_per_day
 
-    # ---------- utilidades geométricas ----------
 
     @staticmethod
     def _haversine_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
@@ -96,21 +95,17 @@ class Router:
         sh_lat, sh_lon = slaughterhouse.lat, slaughterhouse.lon
         distance = 0.0
 
-        # escorxador -> primera granja
         first = farms_path[0]
         distance += self._haversine_km(sh_lat, sh_lon, first.lat, first.lon)
 
-        # entre granjas
         for f_prev, f_next in zip(farms_path[:-1], farms_path[1:]):
             distance += self._haversine_km(f_prev.lat, f_prev.lon, f_next.lat, f_next.lon)
 
-        # última granja -> escorxador
         last = farms_path[-1]
         distance += self._haversine_km(last.lat, last.lon, sh_lat, sh_lon)
 
         return distance
 
-    # ---------- selección de entidades ----------
 
     def _select_candidate_farms(self, current_day: int) -> List[Farm]:
         """
@@ -124,11 +119,9 @@ class Router:
             if not farm.can_deliver_today(current_day):
                 continue
             if farm.get_current_weight() < self.min_market_weight_kg:
-                # Aún demasiado ligeros, los dejamos engordar.
                 continue
             candidates.append(farm)
 
-        # Orden simple: primero los más pesados (priorizamos salir del rango)
         candidates.sort(key=lambda f: f.get_current_weight(), reverse=True)
         return candidates
 
@@ -152,7 +145,6 @@ class Router:
 
         return best_sh
 
-    # ---------- construcción de rutas ----------
 
     def _has_any_remaining_pigs(self, remaining_pigs: Dict[str, int]) -> bool:
         return any(v > 0 for v in remaining_pigs.values())
@@ -171,7 +163,6 @@ class Router:
         Devuelve None si no hay ruta factible.
         """
 
-        # 1) Granjas que todavía tienen animales y pueden entregar hoy
         feasible_farms = [
             f for f in candidate_farms
             if remaining_pigs.get(f.farm_id, 0) > 0 and f.can_deliver_today(current_day)
@@ -179,11 +170,9 @@ class Router:
         if not feasible_farms:
             return None
 
-        # 2) Elegimos la granja más pesada como "semilla" de la ruta
         feasible_farms.sort(key=lambda f: f.get_current_weight(), reverse=True)
         seed_farm = feasible_farms[0]
 
-        # 3) Escorxador más cercano con capacidad
         initial_sh = self._nearest_slaughterhouse_with_capacity(
             seed_farm, remaining_capacity_sh
         )
@@ -195,7 +184,6 @@ class Router:
         if sh_remaining_cap <= 0:
             return None
 
-        # Capacidad de camión (kg)
         truck_capacity_kg = transport.capacity_tons * 1000
         remaining_capacity_kg = truck_capacity_kg
 
@@ -203,7 +191,6 @@ class Router:
         farms_in_route: List[Farm] = []
         distance_km: float = 0.0
 
-        # 4) Añadir granjas a la ruta, hasta máximo de paradas
         while len(farms_in_route) < self.max_stops_per_route:
             best_candidate: Optional[Farm] = None
             best_incremental_distance: float = float("inf")
@@ -234,7 +221,6 @@ class Router:
                 if pigs_possible <= 0:
                     continue
 
-                # Distancia actual y nueva distancia si añadimos esta granja
                 if not farms_in_route:
                     current_dist = 0.0
                     new_dist = self._route_distance_km(initial_sh, [farm])
@@ -250,18 +236,14 @@ class Router:
                     best_pigs_to_pick = pigs_possible
 
             if best_candidate is None:
-                break  # no hay granjas adicionales factibles
-
-            # Comprobar límite de horas diarias con la nueva distancia
-            new_time_hours = best_new_distance / self.speed_kmh if self.speed_kmh > 0 else 0.0
-            if current_hours_used + new_time_hours > self.max_hours_per_day:
-                # Si ni siquiera hay granja en la ruta todavía, no hacemos nada
-                if not farms_in_route:
-                    return None
-                # Si ya había alguna granja, cerramos la ruta tal y como estaba
                 break
 
-            # Aceptamos la granja candidata
+            new_time_hours = best_new_distance / self.speed_kmh if self.speed_kmh > 0 else 0.0
+            if current_hours_used + new_time_hours > self.max_hours_per_day:
+                if not farms_in_route:
+                    return None
+                break
+
             farms_in_route.append(best_candidate)
             distance_km = best_new_distance
             sh_remaining_cap -= best_pigs_to_pick
@@ -271,7 +253,6 @@ class Router:
                 PlannedStop(farm=best_candidate, pigs_to_pick=best_pigs_to_pick)
             )
 
-            # Si ya no queda capacidad en camión o escorxador, paramos
             if remaining_capacity_kg <= 0 or sh_remaining_cap <= 0:
                 break
 
@@ -280,7 +261,6 @@ class Router:
 
         time_hours = distance_km / self.speed_kmh if self.speed_kmh > 0 else 0.0
 
-        # Actualizar capacidad restante del escorxador global
         remaining_capacity_sh[sh_id] = sh_remaining_cap
 
         return PlannedRoute(

@@ -58,10 +58,8 @@ class Simulator:
             max_hours_per_day=max_hours_per_day,
         )
 
-        # Eventos detallados de la simulación
         self._events: List[Dict[str, Any]] = []
 
-    # ---------- API pública ----------
 
     def run(self, days: int = 7) -> pd.DataFrame:
         """
@@ -82,7 +80,6 @@ class Simulator:
 
         return pd.DataFrame(self._events)
 
-    # ---------- lógica interna ----------
 
     def _simulate_single_day(self, day: int) -> None:
         """Simula un único día:
@@ -90,22 +87,17 @@ class Simulator:
         - Se planifican rutas
         - Se ejecutan las rutas
         """
-        # 1) Actualizar peso y edad de los animales
         for farm in self.farms:
             farm.update_growth(days_passed=1)
 
-        # 2) Pedir plan de rutas al Router
         planned_routes: List[PlannedRoute] = self.router.build_daily_plan(day)
 
         if not planned_routes:
-            # No hay rutas este día
             return
 
-        # 3) Ejecutar cada ruta
         for route_idx, planned in enumerate(planned_routes):
             self._execute_route(day, route_idx, planned)
 
-        # 4) Reset diario de escorxadores (capacidad / acumulados)
         for sh in self.slaughterhouses:
             sh.reset_daily_counter()
 
@@ -125,7 +117,6 @@ class Simulator:
 
         route_identifier = f"day{day}_r{route_index}"
 
-        # Crear ruta en el transporte
         route_obj = transport.start_route(
             route_id=route_identifier,
             slaughterhouse_id=slaughterhouse.slaughterhouse_id,
@@ -136,7 +127,7 @@ class Simulator:
         farms_visited_ids: List[str] = []
 
         for stop in stops:
-            isinstance(stop, PlannedStop)  # para IDEs
+            isinstance(stop, PlannedStop)
 
             farm = stop.farm
             pigs_requested = stop.pigs_to_pick
@@ -148,7 +139,6 @@ class Simulator:
 
             load_ok, pigs_loaded = transport.load_pigs(pigs_requested, current_weight)
             if not load_ok or pigs_loaded <= 0:
-                # En teoría no debería pasar porque Router ya mira capacidad
                 continue
 
             farms_visited_ids.append(farm.farm_id)
@@ -156,7 +146,6 @@ class Simulator:
             total_weight_kg += pigs_loaded * current_weight
 
         if total_pigs_loaded <= 0:
-            # Nada se cargó realmente, limpiamos ruta
             transport.current_load_kg = 0.0
             transport.pigs_aboard = 0
             transport.current_route = None
@@ -164,7 +153,6 @@ class Simulator:
 
         avg_weight = total_weight_kg / total_pigs_loaded
 
-        # Entregar en escorxador
         sh_ok, receipt_info = slaughterhouse.receive_pigs(
             pigs_count=total_pigs_loaded,
             avg_weight_kg=avg_weight,
@@ -172,7 +160,6 @@ class Simulator:
         if not sh_ok:
             return
 
-        # Completar ruta en el camión (coste, tiempos, etc.)
         tr_ok, route_info = transport.complete_route(
             distance_km=planned.distance_km,
             time_hours=planned.time_hours,
@@ -180,7 +167,6 @@ class Simulator:
         if not tr_ok:
             return
 
-        # Enriquecer receipt_info con info de contexto
         event: Dict[str, Any] = {
             "day": day,
             "route_index": route_index,
@@ -202,7 +188,6 @@ class Simulator:
 
         self._events.append(event)
 
-    # ---------- helpers ----------
 
     def get_events(self) -> pd.DataFrame:
         """Devuelve una copia del registro de eventos actual."""

@@ -15,11 +15,10 @@ from src.utils.metrics import compute_global_kpis, compute_daily_kpis
 def main():
     """Función principal."""
     print("=" * 60)
-    print("  SIMULACIÓN LOGÍSTICA DE PORCOS - CATALUÑA")
+    print("  SIMULACIÓN LOGÍSTICA DE Cerdos - CATALUNYA")
     print("=" * 60)
     print()
     
-    # 1. Cargar datos
     print("1. Cargando datos...")
     loader = DataLoader(data_dir="data")
     
@@ -27,7 +26,7 @@ def main():
         farms_df, slaughterhouses_df, transports_df = loader.load_all_data()
         print("✓ Datos cargados exitosamente")
         print(f"  - {len(farms_df)} granjas")
-        print(f"  - {len(slaughterhouses_df)} escorxadores")
+        print(f"  - {len(slaughterhouses_df)} mataderos")
         print(f"  - {len(transports_df)} tipos de transporte")
         print(f"  - Datos de consumo: {len(loader.get_consumption_data())} semanas")
         print(f"  - Datos de peso: {len(loader.get_weight_data())} semanas")
@@ -37,7 +36,6 @@ def main():
     
     print()
     
-    # 2. Crear objetos Farm
     print("2. Inicializando granjas...")
     farms = []
     for _, row in farms_df.iterrows():
@@ -57,15 +55,14 @@ def main():
         farms.append(farm)
     
     print(f"✓ {len(farms)} granjas creadas")
-    for farm in farms[:3]:  # Mostrar primeras 3
+    for farm in farms[:3]:
         print(f"  - {farm}")
     if len(farms) > 3:
         print(f"  ... y {len(farms) - 3} más")
     
     print()
     
-    # 3. Crear objetos Slaughterhouse
-    print("3. Inicializando escorxadores...")
+    print("3. Inicializando mataderos...")
     slaughterhouses = []
     for _, row in slaughterhouses_df.iterrows():
         slaughterhouse = Slaughterhouse(
@@ -82,13 +79,12 @@ def main():
         )
         slaughterhouses.append(slaughterhouse)
     
-    print(f"✓ {len(slaughterhouses)} escorxadores creados")
+    print(f"✓ {len(slaughterhouses)} mataderos creados")
     for sh in slaughterhouses:
         print(f"  - {sh}")
     
     print()
     
-    # 4. Crear objetos Transport
     print("4. Inicializando transportes...")
     transports = []
     for _, row in transports_df.iterrows():
@@ -111,7 +107,6 @@ def main():
     print("✓ Inicialización completada exitosamente")
     print("=" * 60)
     
-    # 5. Cargar datos biológicos
     print("\n5. Cargando datos biológicos...")
     bio_manager = BiologicalDataManager(
         loader.get_consumption_data(),
@@ -119,7 +114,6 @@ def main():
     )
     print(f"✓ {bio_manager}")
     
-    # Mostrar estadísticas de ejemplo
     print("\nESTADÍSTICAS DE EJEMPLO (edad 16 semanas):")
     stats = bio_manager.get_statistics_by_age(16)
     print(f"  Peso medio: {stats['weight_mean_kg']:.1f} kg (±{stats['weight_sd_kg']:.1f} kg)")
@@ -128,7 +122,6 @@ def main():
     
     print()
     
-    # 6. Resumen de datos básicos
     print("\nRESUMEN DE DATOS:")
     print(f"  Granjas: {len(farms)}")
     print(f"  Escorxadores: {len(slaughterhouses)}")
@@ -136,13 +129,12 @@ def main():
     print(f"  Total de porcos en sistema: {sum(f.inventory_pigs for f in farms)}")
     print()
     
-    # 7. Lanzar simulación (plan quinzenal: 2 semanas laborales = 10 días)
     print("=" * 60)
     print("6. Lanzando simulación (plan quinzenal, 10 días laborables)...")
     print("=" * 60)
 
     if not farms or not slaughterhouses or not transports:
-        print("No hay suficientes entidades (granjas/escorxadores/transportes) para simular.")
+        print("No hay suficientes entidades (granjas/mataderos/transportes) para simular.")
         return
 
     simulator = Simulator(
@@ -156,22 +148,20 @@ def main():
         max_hours_per_day=8.0,
     )
 
-    DAYS_TO_SIMULATE = 10  # 2 semanas de 5 días
+    DAYS_TO_SIMULATE = 10
     events = simulator.run(days=DAYS_TO_SIMULATE)
 
     if events is None or events.empty:
         print("La simulación no ha generado eventos. Revisa que los CSV tengan datos y que los parámetros tengan sentido.")
         return
 
-    print(f"✓ Simulación completada, rutas ejecutadas: {len(events)}")
+    print(f"Simulación completada, rutas ejecutadas: {len(events)}")
 
-    # 8. KPIs globales
     print("\nKPIs GLOBALES (plan quinzenal):")
     kpis = compute_global_kpis(events)
     for k, v in kpis.items():
         print(f"  {k}: {v}")
 
-    # 9. KPIs diarios (resumen)
     print("\nKPIs POR DÍA:")
     daily = compute_daily_kpis(events)
     print(daily.to_string(index=False))

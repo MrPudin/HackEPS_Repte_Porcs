@@ -10,17 +10,16 @@ class Farm:
     name: str
     lat: float
     lon: float
-    inventory_pigs: int  # Número actual de porcos
-    avg_weight_kg: float  # Peso promedio actual
-    growth_rate_kg_per_week: float  # Crecimiento semanal
-    age_weeks: int  # Edad actual en semanas
-    price_per_kg: float  # Precio por kg canal
-    consumption_pigs: float  # Consumo por cerdo por día (kg)
-    capacity: int  # Capacidad máxima de la granja
+    inventory_pigs: int
+    avg_weight_kg: float
+    growth_rate_kg_per_week: float
+    age_weeks: int
+    price_per_kg: float
+    consumption_pigs: float
+    capacity: int
     
-    # Atributos de control simulación
-    pigs_delivered_week: int = 0  # Porcos enviados esta "semana logística"
-    last_delivery_day: int = -5  # Último día que se visitó (semana de 5 días)
+    pigs_delivered_week: int = 0
+    last_delivery_day: int = -5
     weekly_inventory_history: List[int] = field(default_factory=list)
     
     def get_location(self) -> Tuple[float, float]:
@@ -48,10 +47,8 @@ class Farm:
         total_kg = pigs_count * avg_weight
         penalty = 0.0
         
-        # Penalización 15% para 100–105 o 115–120 kg (fuera del rango ideal)
         if (avg_weight < 105 or avg_weight > 115) and (100 <= avg_weight <= 120):
             penalty = 0.15
-        # Penalización 20% para <100 o >120 kg
         elif avg_weight < 100 or avg_weight > 120:
             penalty = 0.20
         
@@ -72,7 +69,6 @@ class Farm:
             return False
         
         if self.last_delivery_day < 0:
-            # Nunca se ha entregado, puede entregar
             return True
         
         current_week = current_day // 5

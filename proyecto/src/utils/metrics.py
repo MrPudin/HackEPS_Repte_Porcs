@@ -88,7 +88,6 @@ def compute_global_kpis(events: pd.DataFrame) -> Dict[str, Any]:
     total_penalty = float(events.get("penalty_applied", 0.0).sum())
     num_routes = int(len(events))
 
-    # Peso medio ponderado por nº de animales
     if "avg_weight_kg" in events.columns and total_pigs > 0:
         weighted_weight = (events["avg_weight_kg"] * events["pigs_delivered"]).sum()
         avg_weight = float(weighted_weight / total_pigs)

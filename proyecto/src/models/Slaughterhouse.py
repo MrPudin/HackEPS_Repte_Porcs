@@ -10,16 +10,15 @@ class Slaughterhouse:
     name: str
     lat: float
     lon: float
-    capacity_per_day: int  # Capacidad máxima de porcos/día
-    price_per_kg: float  # Precio por kg en vivo
-    penalty_15_min: float  # Peso mínimo para penalización 15%
-    penalty_15_max: float  # Peso máximo para penalización 15%
-    penalty_20_min: float  # Peso mínimo para penalización 20%
-    penalty_20_max: float  # Peso máximo para penalización 20%
+    capacity_per_day: int
+    price_per_kg: float
+    penalty_15_min: float
+    penalty_15_max: float 
+    penalty_20_min: float
+    penalty_20_max: float
     
-    # Atributos de control simulación
     pigs_received_today: int = 0
-    total_weight_received: float = 0.0  # kg en vivo
+    total_weight_received: float = 0.0
     daily_history: List[dict] = field(default_factory=list)
     
     def get_location(self) -> Tuple[float, float]:
@@ -39,15 +38,12 @@ class Slaughterhouse:
         Calcula la penalización según el peso promedio.
         Retorna el porcentaje de penalización (0.0, 0.15, 0.20).
         """
-        # Penalización 20% para <100 o >120 kg
         if avg_weight_kg < self.penalty_20_min or avg_weight_kg > self.penalty_20_max:
             return 0.20
         
-        # Penalización 15% para fuera del rango ideal (105-115)
         if avg_weight_kg < self.penalty_15_min or avg_weight_kg > self.penalty_15_max:
             return 0.15
         
-        # Sin penalización (rango ideal: 105-115 kg)
         return 0.0
     
     def receive_pigs(self, pigs_count: int, avg_weight_kg: float) -> Tuple[bool, dict]:
@@ -74,7 +70,7 @@ class Slaughterhouse:
             "total_kg_live": total_kg_live,
             "penalty_applied": penalty,
             "revenue": revenue,
-            "timestamp": None  # Se llena en la simulación
+            "timestamp": None 
         }
         
         self.daily_history.append(receipt_info)

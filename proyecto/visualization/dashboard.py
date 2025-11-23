@@ -8,7 +8,7 @@ Incluye:
 - Porcos entregados por día
 - Beneficio por día
 - Coste medio por ruta
-- Pigs por ruta
+- Porcos medios por ruta
 """
 
 from __future__ import annotations
@@ -54,7 +54,10 @@ def plot_daily_profit(events: pd.DataFrame):
 
     daily = (
         events.groupby("day")
-        .agg(revenue=("revenue", "sum"), transport_cost=("transport_cost", "sum"))
+        .agg(
+            revenue=("revenue", "sum"),
+            transport_cost=("transport_cost", "sum"),
+        )
         .reset_index()
     )
     daily["net_profit"] = daily["revenue"] - daily["transport_cost"]
@@ -70,7 +73,7 @@ def plot_daily_profit(events: pd.DataFrame):
 
 
 def plot_avg_pigs_per_route(events: pd.DataFrame):
-    """Pigs medios por ruta, por día."""
+    """Porcos medios por ruta y día."""
     if events is None or events.empty:
         print("No hay eventos para mostrar.")
         return
@@ -100,6 +103,10 @@ def plot_avg_distance_per_route(events: pd.DataFrame):
     """Distancia media por ruta y día."""
     if events is None or events.empty:
         print("No hay eventos para mostrar.")
+        return
+
+    if "distance_km" not in events.columns or "route_id" not in events.columns:
+        print("Faltan columnas 'distance_km' o 'route_id' en los eventos.")
         return
 
     daily = (

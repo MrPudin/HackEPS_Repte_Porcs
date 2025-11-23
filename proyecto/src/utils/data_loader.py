@@ -44,7 +44,6 @@ class DataLoader:
         file_path = os.path.join(self.data_dir, "farms 1.csv")
         df = pd.read_csv(file_path)
         
-        # Validar columnas requeridas
         required_cols = [
             'farm_id', 'name', 'lat', 'lon', 'inventory_pigs',
             'avg_weight_kg', 'growth_rate_kg_per_week', 'age_weeks',
@@ -55,7 +54,6 @@ class DataLoader:
         if missing_cols:
             raise ValueError(f"Columnas faltantes en farms: {missing_cols}")
         
-        # Convertir tipos de datos
         df['lat'] = pd.to_numeric(df['lat'], errors='coerce')
         df['lon'] = pd.to_numeric(df['lon'], errors='coerce')
         df['inventory_pigs'] = pd.to_numeric(df['inventory_pigs'], errors='coerce')
@@ -66,7 +64,6 @@ class DataLoader:
         df['consumption_pigs'] = pd.to_numeric(df['consumption_pigs'], errors='coerce')
         df['capacity'] = pd.to_numeric(df['capacity'], errors='coerce')
         
-        # Validar datos no nulos
         if df[required_cols].isnull().any().any():
             print("⚠ Advertencia: Hay valores nulos en las granjas")
             df = df.dropna(subset=required_cols)
@@ -88,7 +85,6 @@ class DataLoader:
         if missing_cols:
             raise ValueError(f"Columnas faltantes en escorxadores: {missing_cols}")
         
-        # Convertir tipos de datos
         numeric_cols = [col for col in required_cols if col != 'slaughterhouse_id' and col != 'name']
         for col in numeric_cols:
             df[col] = pd.to_numeric(df[col], errors='coerce')
@@ -136,12 +132,9 @@ class DataLoader:
         if not os.path.exists(file_path):
             raise FileNotFoundError(f"No se encontró el fichero de consumo: {file_path}")
 
-        # Leemos sin usar la primera fila como cabecera
         raw = pd.read_excel(file_path, header=None)
 
-        # Fila 0 son los nombres "lógicos"
         header = raw.iloc[0].tolist()
-        # Esperamos algo como: ["Age of pigs in week", "mean", "sd"]
         data = raw.iloc[1:].copy()
         data.columns = [
             "age of pigs in week",
@@ -149,7 +142,6 @@ class DataLoader:
             "sd",
         ]
 
-        # Aseguramos tipos numéricos
         data["age of pigs in week"] = pd.to_numeric(
             data["age of pigs in week"], errors="coerce"
         )

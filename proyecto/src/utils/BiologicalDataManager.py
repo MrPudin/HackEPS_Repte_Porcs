@@ -25,12 +25,10 @@ class BiologicalDataManager:
     
     def _normalize_columns(self):
         """Normaliza nombres de columnas para consistencia."""
-        # Consumo
         if not self.consumption_df.empty:
             cols = self.consumption_df.columns.str.strip().str.lower()
             self.consumption_df.columns = cols
         
-        # Peso
         if not self.weight_df.empty:
             cols = self.weight_df.columns.str.strip().str.lower()
             self.weight_df.columns = cols
@@ -43,10 +41,8 @@ class BiologicalDataManager:
             (weight_mean_kg, weight_sd_kg)
         """
         if self.weight_df.empty:
-            # Fallback: estimación lineal simple
             return self._estimate_weight(age_weeks), 5.0
         
-        # Buscar por edad exacta o interpolar
         return self._interpolate_value(
             self.weight_df, 
             'age of pigs in week', 
@@ -63,7 +59,6 @@ class BiologicalDataManager:
             (consumption_mean_kg, consumption_sd_kg)
         """
         if self.consumption_df.empty:
-            # Fallback: estimación simple
             return self._estimate_consumption(age_weeks), 2.0
         
         return self._interpolate_value(
@@ -79,7 +74,6 @@ class BiologicalDataManager:
         """
         Interpola valores para una edad entre datos discretos.
         """
-        # Buscar columnas con nombres similares
         age_cols = [c for c in df.columns if 'age' in c.lower() and 'week' in c.lower()]
         mean_cols = [c for c in df.columns if 'mean' in c.lower()]
         sd_cols = [c for c in df.columns if 'sd' in c.lower()]
@@ -91,21 +85,17 @@ class BiologicalDataManager:
         mean_col = mean_cols[0]
         sd_col = sd_cols[0]
         
-        # Encontrar índices para interpolación
         df_sorted = df.sort_values(age_col)
         ages = df_sorted[age_col].values
         means = df_sorted[mean_col].values
         sds = df_sorted[sd_col].values
         
-        # Si la edad es menor que el mínimo
         if age <= ages[0]:
             return float(means[0]), float(sds[0])
         
-        # Si la edad es mayor que el máximo
         if age >= ages[-1]:
             return float(means[-1]), float(sds[-1])
         
-        # Interpolación lineal
         idx = np.searchsorted(ages, age)
         age1, age2 = ages[idx-1], ages[idx]
         mean1, mean2 = means[idx-1], means[idx]
@@ -119,13 +109,10 @@ class BiologicalDataManager:
     
     def _estimate_weight(self, age_weeks: float) -> float:
         """Estimación simple de peso si no hay datos."""
-        # Aproximación: crecimiento no-lineal
-        # Porcos típicamente van de ~10kg a ~120kg entre 5 y 25 semanas
         return 10 + (age_weeks - 5) * 5.5
     
     def _estimate_consumption(self, age_weeks: float) -> float:
         """Estimación simple de consumo si no hay datos."""
-        # Aproximación: consumo crece con edad
         return 1.5 + age_weeks * 0.3
     
     def generate_weight_distribution(self, age_weeks: float, 
@@ -139,10 +126,8 @@ class BiologicalDataManager:
         """
         mean, sd = self.get_weight_by_age(age_weeks)
         
-        # Generar distribución normal
         weights = np.random.normal(mean, sd, num_pigs)
         
-        # Limitar a rangos realistas (evitar valores negativos o extremos)
         weights = np.clip(weights, 5, 150)
         
         return weights
@@ -163,7 +148,6 @@ class BiologicalDataManager:
         """
         mean, sd = self.get_weight_by_age(age_weeks)
         
-        # Usar distribución normal acumulada
         p_min = norm.cdf(min_kg, mean, sd)
         p_max = norm.cdf(max_kg, mean, sd)
         

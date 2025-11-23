@@ -14,7 +14,7 @@ class TransportStatus(Enum):
 class Route:
     """Representa una ruta de un transporte (granjas -> escorxador)."""
     route_id: str
-    farms_visited: List[str] = field(default_factory=list)  # IDs de granjas
+    farms_visited: List[str] = field(default_factory=list)
     total_distance_km: float = 0.0
     total_time_hours: float = 0.0
     pigs_loaded: int = 0
@@ -24,7 +24,7 @@ class Route:
     
     def add_farm(self, farm_id: str, distance_km: float, time_hours: float):
         """Añade una granja a la ruta."""
-        if len(self.farms_visited) < 3:  # Máximo 3 granjas por viaje
+        if len(self.farms_visited) < 3:
             self.farms_visited.append(farm_id)
             self.total_distance_km += distance_km
             self.total_time_hours += time_hours
@@ -40,13 +40,12 @@ class Transport:
     """Representa un vehículo de transporte."""
     
     transport_id: str
-    type: str  # "small_truck" (10T) o "normal_truck" (20T)
-    capacity_tons: float  # Capacidad en toneladas
-    cost_per_km: float  # €/km
-    max_hours_per_week: float  # Horas máximas disponibles/semana
-    fixed_weekly_cost: float  # Costo fijo €/semana
+    type: str
+    capacity_tons: float
+    cost_per_km: float
+    max_hours_per_week: float
+    fixed_weekly_cost: float
     
-    # Atributos de control
     current_load_kg: float = 0.0
     pigs_aboard: int = 0
     status: TransportStatus = TransportStatus.AVAILABLE
@@ -69,7 +68,7 @@ class Transport:
     def is_full(self) -> bool:
         """Comprueba si está a capacidad."""
         capacity_kg = self.capacity_tons * 1000
-        return self.current_load_kg >= capacity_kg * 0.95  # 95% considera "lleno"
+        return self.current_load_kg >= capacity_kg * 0.95
     
     def can_use_hours(self, hours_needed: float) -> bool:
         """Comprueba si tiene horas disponibles esta semana."""
@@ -83,7 +82,6 @@ class Transport:
         weight_needed_kg = pigs_count * avg_weight_kg
         
         if weight_needed_kg > self.get_available_capacity_kg():
-            # Cargar solo lo que cabe
             pigs_count = self.get_available_capacity_pigs(avg_weight_kg)
             weight_needed_kg = pigs_count * avg_weight_kg
         
@@ -115,7 +113,7 @@ class Transport:
         if not self.can_use_hours(time_hours):
             return False, {"error": "Horas insuficientes esta semana"}
         
-        # Calcular costo del viaje
+
         trip_cost = distance_km * self.cost_per_km * (self.current_load_kg / (self.capacity_tons * 1000))
         
         self.current_route.total_distance_km = distance_km
@@ -127,7 +125,6 @@ class Transport:
         self.routes_completed.append(self.current_route)
         self.hours_used_this_week += time_hours
         
-        # Resetear para próxima ruta
         route_info = {
             "route_id": self.current_route.route_id,
             "farms_visited": self.current_route.farms_visited,
